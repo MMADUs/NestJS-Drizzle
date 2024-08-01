@@ -11,15 +11,14 @@ import * as schema from './schema';
       provide: 'DB',
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        console.log('ConfigService', configService);
         const pool = new Pool({
-          host: "localhost",
-          user: "postgres",
-          password: "password",
-          database: "nest",
-          port: 5432,
+          host: configService.get<string>('DB_HOST'),
+          user: configService.get<string>('DB_USER'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_NAME'),
+          port: configService.get<number>('DB_PORT'),
         });
-        return drizzle(pool, { schema });
+        return drizzle<typeof schema>(pool, { schema });
       },
     },
   ],

@@ -19,4 +19,9 @@ export class ProductDto {
   @IsBoolean()
   @IsNotEmpty()
   available: boolean;
+
+  @IsInt()
+  @IsNotEmpty()
+  @Type(() => Number)
+  categoryId: number;
 }
