@@ -29,3 +29,13 @@ export const Category = pgTable('category', {
 export const categoryRelations = relations(Category, ({ many }) => ({
   products: many(Product),
 }));
+
+export const Users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  password: text('password').notNull(),
+  token: text('token').default(null),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})

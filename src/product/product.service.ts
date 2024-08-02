@@ -7,7 +7,9 @@ import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class ProductService {
-  constructor(@Inject('DB') private db: NodePgDatabase<typeof schema>) {}
+  constructor(
+    @Inject('DB') private db: NodePgDatabase<typeof schema>
+  ) {}
 
   async createProduct(payload: ProductDto): Promise<ProductResponse> {
     const [product] = await this.db.insert(schema.Product).values({
@@ -38,7 +40,6 @@ export class ProductService {
         category: true
       }
     });
-
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
