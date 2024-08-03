@@ -10,11 +10,11 @@ import {
   UseFilters,
   ValidationPipe,
 } from '@nestjs/common';
-import { HttpExceptionFilter } from '../filter/httpException';
+import { HttpExceptionFilter } from '../common/filter/httpException';
 import { CategoryService } from './category.service';
-import { DataResponse } from '../types/http/response.types';
-import { CategoryDto } from './category.dto';
-import { CategoryResponse } from '../types/entity/category.types';
+import { DataResponse } from '../common/types/http/response.types';
+import { CategoryDto } from '../common/types/entity/request/category.dto';
+import { CategoryResponse } from '../common/types/entity/response/category.types';
 
 @Controller('category')
 @UseFilters(HttpExceptionFilter)

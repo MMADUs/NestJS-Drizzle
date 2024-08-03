@@ -1,25 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   private readonly secretKey = 'your_secret_key';
-  private readonly expiresIn = '1hr';
+  private readonly accessExpiry = '1s';
+  private readonly refreshExpiry = '1h';
 
   generateAccessToken(payload: object): string {
-    return jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
+    return jwt.sign(payload, this.secretKey, { expiresIn: this.accessExpiry });
   }
 
   generateRefreshToken(payload: object): string {
-    return jwt.sign(payload, this.secretKey, { expiresIn: this.expiresIn });
+    return jwt.sign(payload, this.secretKey, { expiresIn: this.refreshExpiry });
   }
 
   verifyAccessToken(token: string): any {
     try {
       return jwt.verify(token, this.secretKey);
     } catch (error) {
-      throw new Error('Invalid token');
+      return null
     }
   }
 
@@ -27,7 +28,7 @@ export class AuthService {
     try {
       return jwt.verify(token, this.secretKey);
     } catch (error) {
-      throw new Error('Invalid token');
+      return null
     }
   }
 

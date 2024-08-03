@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { ProductDto } from './product.dto';
-import * as schema from '../db/schema'
-import { ProductResponse } from '../types/entity/product.types';
+import { ProductDto } from '../common/types/entity/request/product.dto';
+import * as schema from '../common/db/schema'
+import { ProductResponse } from '../common/types/entity/response/product.types';
 import { eq } from 'drizzle-orm';
 
 @Injectable()

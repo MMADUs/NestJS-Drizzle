@@ -29,3 +29,13 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class ProfileDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+}

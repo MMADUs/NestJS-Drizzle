@@ -1,10 +1,23 @@
-import { Body, Controller, HttpCode, Post, Res, UseFilters, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  Post,
+  Put,
+  Res,
+  UseFilters,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { HttpExceptionFilter } from '../filter/httpException';
-import { DataResponse } from '../types/http/response.types';
-import { UserResponse } from '../types/entity/user.types';
-import { LoginDto, RegisterDto } from './user.dto';
+import { HttpExceptionFilter } from '../common/filter/httpException';
+import { DataResponse } from '../common/types/http/response.types';
+import { UserResponse } from '../common/types/entity/response/user.types';
+import { LoginDto, ProfileDto, RegisterDto, ResetPasswordDto } from '../common/types/entity/request/user.dto';
 import { Response } from 'express';
+import { GetUser } from '../common/decorator/userRequest';
+import { AuthGuard } from '../common/guard/auth.guard';
 
 @Controller('user')
 @UseFilters(HttpExceptionFilter)
@@ -51,5 +64,49 @@ export class UserController {
       message: "Login successfully",
       errors: null,
     };
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete("/logout")
+  @HttpCode(200)
+  async logout(
+    @GetUser() userId: number
+  ): Promise<DataResponse<UserResponse>> {
+    await this.userService.Logout(userId);
+    return {
+      data: null,
+      message: "Logout successfully",
+      errors: null,
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Put("/password")
+  @HttpCode(200)
+  async updatePassword(
+    @Body(ValidationPipe) request: ResetPasswordDto,
+    @GetUser() userId: number
+  ): Promise<DataResponse<void>> {
+    await this.userService.UpdatePassword(userId, request)
+    return {
+      data: null,
+      message: "Update password successfully",
+      errors: null,
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Put()
+  @HttpCode(200)
+  async updateProfile(
+    @Body(ValidationPipe) request: ProfileDto,
+    @GetUser() userId: number
+  ): Promise<DataResponse<UserResponse>> {
+    const user = await this.userService.UpdateProfile(userId, request)
+    return {
+      data: user,
+      message: "Update password successfully",
+      errors: null,
+    }
   }
 }

@@ -9,19 +9,21 @@ import {
   Param,
   ParseIntPipe,
   ValidationPipe,
-  UseFilters,
+  UseFilters, UseGuards,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { ProductDto } from './product.dto';
-import { DataResponse } from '../types/http/response.types';
-import { ProductResponse } from '../types/entity/product.types';
-import { HttpExceptionFilter } from '../filter/httpException';
+import { ProductDto } from '../common/types/entity/request/product.dto';
+import { DataResponse } from '../common/types/http/response.types';
+import { ProductResponse } from '../common/types/entity/response/product.types';
+import { HttpExceptionFilter } from '../common/filter/httpException';
+import { AuthGuard } from '../common/guard/auth.guard';
 
 @Controller('product')
 @UseFilters(HttpExceptionFilter)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
+  @UseGuards(AuthGuard)
   @Post()
   @HttpCode(201)
   async create(
@@ -35,6 +37,7 @@ export class ProductController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   @HttpCode(200)
   async findAll(): Promise<DataResponse<ProductResponse[]>> {

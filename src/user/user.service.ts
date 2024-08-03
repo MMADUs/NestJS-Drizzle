@@ -1,10 +1,10 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import * as schema from '../db/schema';
-import { LoginDto, RegisterDto } from './user.dto';
+import * as schema from '../common/db/schema';
+import { LoginDto, ProfileDto, RegisterDto, ResetPasswordDto } from '../common/types/entity/request/user.dto';
 import { eq } from 'drizzle-orm';
-import { Session, UserResponse } from '../types/entity/user.types';
+import { Session, UserResponse } from '../common/types/entity/response/user.types';
 
 @Injectable()
 export class UserService {
@@ -49,6 +49,50 @@ export class UserService {
       .where(eq(schema.Users.id, userExist.id))
 
     return this.tokenToResponse(accessToken, refreshToken);
+  }
+
+  async RefreshToken(id: number): Promise<string> | null {
+    const [userExist] = await this.db.select().from(schema.Users).where(eq(schema.Users.id, id));
+    return userExist ? userExist.token : null;
+  }
+
+  async Logout(id: number): Promise<void> {
+    const [userExist] = await this.db.select().from(schema.Users).where(eq(schema.Users.id, id));
+
+    await this.db.update(schema.Users)
+      .set({
+        token: null
+      } as Partial<typeof schema.Users.$inferInsert>)
+      .where(eq(schema.Users.id, userExist.id))
+  }
+
+  async UpdatePassword(id: number, payload: ResetPasswordDto): Promise<void> {
+    const [updatedUserPassword] = await this.db.update(schema.Users)
+      .set({
+        password: await this.authService.hashPassword(payload.password),
+      } as Partial<typeof schema.Users.$inferInsert>)
+      .where(eq(schema.Users.id, id))
+      .returning();
+
+    if (!updatedUserPassword) {
+      throw new NotFoundException(`User not found`);
+    }
+  }
+
+  async UpdateProfile(id: number, payload: ProfileDto): Promise<UserResponse> {
+    const [updatedUserProfile] = await this.db.update(schema.Users)
+      .set({
+        name: payload.name,
+        email: payload.email,
+      } as Partial<typeof schema.Users.$inferInsert>)
+      .where(eq(schema.Users.id, id))
+      .returning();
+
+    if (!updatedUserProfile) {
+      throw new NotFoundException(`User not found`);
+    }
+
+    return this.entityToResponse(updatedUserProfile);
   }
 
   private entityToResponse(

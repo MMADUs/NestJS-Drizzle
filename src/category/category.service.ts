@@ -1,9 +1,9 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import * as schema from '../db/schema';
+import * as schema from '../common/db/schema';
 import { eq } from 'drizzle-orm';
-import { CategoryDto } from './category.dto';
-import { CategoryResponse } from '../types/entity/category.types';
+import { CategoryDto } from '../common/types/entity/request/category.dto';
+import { CategoryResponse } from '../common/types/entity/response/category.types';
 
 @Injectable()
 export class CategoryService {
